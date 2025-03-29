@@ -1,0 +1,24 @@
+---
+import Navbar from "../components/Navbar.astro";
+
+ interface HomeProps {
+  title?: string;
+  description?: string;
+}
+
+  const {
+    title = "About",
+    description = "This is the about page.",
+  } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <title>{title}</title>
+  </head>
+  <body>
+    <h1>{description}</h1>
+    <p></p>
+  </body>
+
+</html>

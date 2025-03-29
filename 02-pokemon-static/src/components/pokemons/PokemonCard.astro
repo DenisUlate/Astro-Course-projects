@@ -1,0 +1,23 @@
+---
+
+interface Props {
+  id: number;
+  name: string;
+}
+
+//Receive he Pokemon data from the parent component
+const { id, name } = Astro.props;
+
+// Construct the image URL using the id and name
+const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+---
+
+<a href={`/pokemons/${name}`} class="border rounded border-neutral-700 p-2 shadow-md bg-transparent">
+  <div class="flex justify-center mb-2 p-2 rounded-md">
+    <img src={imageUrl} alt={`Pokémon ${name}`} class="w-32 h-32" loading="lazy" />
+  </div>
+  <div class="flex space-x-2 my-0.5 mx-0 capitalize">
+    <span class="text-neutral-400">#{id}</span>
+    <h3 class="font-semibold">{name}</h3>
+  </div>
+</a>

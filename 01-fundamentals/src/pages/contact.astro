@@ -1,0 +1,27 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+
+ interface ContactProps {
+  title?: string;
+  description?: string;
+  Name?: string;
+}
+
+  const {
+    title = "Contact",
+    description = "This is the contact page.",
+
+  } = Astro.props;
+---
+
+
+<Layout>
+
+    <h1>{title}</h1>
+    <p>{description}</p>
+
+</Layout>
+ 
+
+</html>

@@ -1,0 +1,46 @@
+---
+import type { GetStaticPaths } from "astro";
+import Layout from "../../layouts/Layout.astro";
+
+
+export const getStaticPaths = (() => {
+  
+  return [
+    { params: { name: "bulbasaur" } },
+    { params: { name: "ivysaur" } },
+    { params: { name: "venusaur" } },
+    { params: { name: "charmander" } },
+    { params: { name: "charmeleon" } },
+    { params: { name: "charizard" } },
+    { params: { name: "squirtle" } },
+    { params: { name: "wartortle" } },
+    { params: { name: "blastoise" } },
+    { params: { name: "caterpie" } },
+    { params: { name: "metapod" } },
+    { params: { name: "butterfree" } },
+    { params: { name: "weedle" } },
+    { params: { name: "kakuna" } },
+    { params: { name: "beedrill" } },
+    { params: { name: "pidgey" } },
+    { params: { name: "pidgeotto" } },
+    { params: { name: "pidgeot" } },
+    { params: { name: "rattata" } },
+    { params: { name: "raticate" } },
+  ];
+}) satisfies GetStaticPaths;
+
+const {name} = Astro.params;
+---
+
+<Layout title="Pokémon Static">
+  <h1>Pokémon</h1>
+  <hr class="my-4" />
+  <section aria-label="Pokémon" class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4">
+    <div class="bg-neutral-700 shadow-md rounded-lg p-4 flex flex-col items-center justify-center">
+      <img src="/images/pokemons/1.png" alt="Bulbasaur" class="w-32 h-32 mb-2" />
+      <h2 class="text-xl font-bold">{name}</h2>
+      <p class="text-gray-500">#001</p>
+    </div>
+  </section>
+
+</Layout>
