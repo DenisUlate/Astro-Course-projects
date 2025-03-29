@@ -1,13 +1,14 @@
 ---
 import type { GetStaticPaths } from "astro";
 import Layout from "../../layouts/Layout.astro";
+import PokemonCard from "../../components/pokemons/PokemonCard.astro";
 
 
 export const getStaticPaths = (() => {
   
   return [
-    { params: { name: "bulbasaur" } },
-    { params: { name: "ivysaur" } },
+    { params: { name: "bulbasaur" }, props: {name: "bulbasaur", url: "https://pokeapi.co/api/v2/pokemon/1/"} },
+    { params: { name: "ivysaur"}, props: {name: "bulbasaur", url: "https://pokeapi.co/api/v2/pokemon/4/"}  },
     { params: { name: "venusaur" } },
     { params: { name: "charmander" } },
     { params: { name: "charmeleon" } },
@@ -30,17 +31,29 @@ export const getStaticPaths = (() => {
 }) satisfies GetStaticPaths;
 
 const {name} = Astro.params;
+const {url} = Astro.props;
+
+const id = url ? parseInt(url.split("/").slice(-2)[0], 10) : 0;
+const aukdioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
 ---
 
 <Layout title="Pokémon Static">
   <h1>Pokémon</h1>
   <hr class="my-4" />
-  <section aria-label="Pokémon" class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4">
-    <div class="bg-neutral-700 shadow-md rounded-lg p-4 flex flex-col items-center justify-center">
-      <img src="/images/pokemons/1.png" alt="Bulbasaur" class="w-32 h-32 mb-2" />
-      <h2 class="text-xl font-bold">{name}</h2>
-      <p class="text-gray-500">#001</p>
-    </div>
+  <section aria-label="Pokémon" class="flex flex-col items-center justify-center w-full h-full mt-10">
+     <a href="/" class="text-blue-800 font-bold text-2xl mb-4">Regresar</a>
+    <PokemonCard name={name} id={id} />
+    <audio controls class="mt-4" src={aukdioSrc}>
+      <source src={aukdioSrc} type="audio/ogg" />
+      <p>Tu navegador no soporta el elemento de audio.</p>
+    </audio>
+      
   </section>
-
 </Layout>
+
+<style>
+  a {
+   @apply hover:underline;
+  
+  }
+</style>
