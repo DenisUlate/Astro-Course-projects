@@ -1,59 +1,63 @@
 ---
 import type { GetStaticPaths } from "astro";
-import Layout from "../../layouts/Layout.astro";
+import type { PokemonListResponse } from "../../interfaces/pokemon-list.response";
+
 import PokemonCard from "../../components/pokemons/PokemonCard.astro";
+import Layout from "../../layouts/Layout.astro";
 
+// Esta función getStaticPaths es fundamental para la generación de páginas estáticas en Astro.
+// Se ejecuta en tiempo de construcción (build time) y define todas las rutas posibles.
+export const getStaticPaths = (async() => {
 
-export const getStaticPaths = (() => {
+  // Obtiene los primeros 151 Pokémon originales desde la API
+  const resp = await fetch("https://pokeapi.co/api/v2/pokemon?limit=151");
+  const data = await resp.json() as PokemonListResponse;
+ 
+  // Transforma los datos de cada Pokémon en parámetros y props para cada página
+  return data.results.map(pokemon => {
+    // Extrae el ID del Pokémon desde la URL de la API
+    const id = parseInt(pokemon.url.split("/").slice(-2)[0], 10);
+
+    return {
+      // Define el parámetro que se usará en la URL (/pokemons/:name)
+      params: {name: pokemon.name},
+      // Define las propiedades que estarán disponibles en la página
+      props: {id, url: pokemon.url},
+    }
+  })
+  }) satisfies GetStaticPaths;
   
-  return [
-    { params: { name: "bulbasaur" }, props: {name: "bulbasaur", url: "https://pokeapi.co/api/v2/pokemon/1/"} },
-    { params: { name: "ivysaur"}, props: {name: "bulbasaur", url: "https://pokeapi.co/api/v2/pokemon/4/"}  },
-    { params: { name: "venusaur" } },
-    { params: { name: "charmander" } },
-    { params: { name: "charmeleon" } },
-    { params: { name: "charizard" } },
-    { params: { name: "squirtle" } },
-    { params: { name: "wartortle" } },
-    { params: { name: "blastoise" } },
-    { params: { name: "caterpie" } },
-    { params: { name: "metapod" } },
-    { params: { name: "butterfree" } },
-    { params: { name: "weedle" } },
-    { params: { name: "kakuna" } },
-    { params: { name: "beedrill" } },
-    { params: { name: "pidgey" } },
-    { params: { name: "pidgeotto" } },
-    { params: { name: "pidgeot" } },
-    { params: { name: "rattata" } },
-    { params: { name: "raticate" } },
-  ];
-}) satisfies GetStaticPaths;
+  
+// Extraemos los parámetros y props que vienen del sistema de rutas de Astro
+const {name} = Astro.params; // El nombre viene de la URL
+const {id, url} = Astro.props; // El id y url vienen de getStaticPaths
 
-const {name} = Astro.params;
-const {url} = Astro.props;
-
-const id = url ? parseInt(url.split("/").slice(-2)[0], 10) : 0;
-const aukdioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
+// Construimos la URL para el sonido del Pokémon usando su ID
+const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`;
 ---
 
-<Layout title="Pokémon Static">
-  <h1>Pokémon</h1>
+<!-- La estructura de la página con el componente Layout como contenedor principal -->
+<Layout title={`Pokémon | #${id} ${name}`}>
+  <h1 class="capitalize text-2xl font-bold text-center">Pokémon: {name}</h1>
   <hr class="my-4" />
   <section aria-label="Pokémon" class="flex flex-col items-center justify-center w-full h-full mt-10">
-     <a href="/" class="text-blue-800 font-bold text-2xl mb-4">Regresar</a>
-    <PokemonCard name={name} id={id} />
-    <audio controls class="mt-4" src={aukdioSrc}>
-      <source src={aukdioSrc} type="audio/ogg" />
+     <!-- Enlace para volver a la página principal -->
+     <a href="/pokemons/1" class="text-blue-800 font-bold text-2xl mb-4">Regresar</a>
+    <!-- Componente de tarjeta que muestra la información del Pokémon -->
+    <PokemonCard name={name} id={id} isBig />
+    <!-- Reproductor de audio con el sonido del Pokémon -->
+    <audio controls class="mt-4" src={audioSrc}>
+      <source src={audioSrc} type="audio/ogg" />
       <p>Tu navegador no soporta el elemento de audio.</p>
     </audio>
       
   </section>
 </Layout>
 
+<!-- Estilos específicos para esta página -->
 <style>
   a {
-   @apply hover:underline;
+   @apply hover:underline; 
   
   }
 </style>

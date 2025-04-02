@@ -3,20 +3,33 @@
 interface Props {
   id: number;
   name: string;
+  isBig?: boolean;
 }
 
 //Receive he Pokemon data from the parent component
-const { id, name } = Astro.props;
+const { id, name, isBig = false } = Astro.props;
 
 // Construct the image URL using the id and name
 const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
 ---
-
-<a href={`/pokemons/${name}`} class="border rounded border-neutral-700 p-2 shadow-md bg-transparent">
+<!-- href={`/pokemons/${name}`}  -->
+<a href={`/pokemons/${name}`} class:list={[`rounded border-neutral-700 p-2 shadow-md bg-transparent hover:bg-neutral-800 hover:shadow-lg transition duration-300 ease-in-out`, {
+  'w-full h-full': isBig,
+  'border': !isBig,
+ 
+}]}>
   <div class="flex justify-center mb-2 p-2 rounded-md">
-    <img src={imageUrl} alt={`Pokémon ${name}`} class="w-32 h-32" loading="lazy" />
+    <img src={imageUrl} alt={`Pokémon ${name}`} loading="lazy" class:list={[{
+      'w-78 h-78': isBig, 
+      'w-32 h-32': !isBig,    
+    }]} />
   </div>
-  <div class="flex space-x-2 my-0.5 mx-0 capitalize">
+  <div class:list={[`flex w-full my-0.5 capitalize`, {
+    'text-center flex-col items-center': isBig,
+    'text-center': isBig,
+    'text-3xl': isBig,
+    'space-x-2': !isBig,
+  }]}>
     <span class="text-neutral-400">#{id}</span>
     <h3 class="font-semibold">{name}</h3>
   </div>

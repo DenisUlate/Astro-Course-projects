@@ -1,0 +1,78 @@
+---
+import '../../styles/global.css';
+
+import type { GetStaticPaths } from 'astro';
+import type { PokemonListResponse } from '../../interfaces/pokemon-list.response';
+import Layout from '../../layouts/Layout.astro';
+import PokemonCard from '../../components/pokemons/PokemonCard.astro';
+
+const title = "Pokémon Static | Home"
+
+
+
+export const getStaticPaths = (async ({paginate}) => {
+  const resp = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151');
+  const {results} = (await resp.json()) as PokemonListResponse;
+
+   return paginate(results, {
+    pageSize: 20,
+    pageCount: 5,
+    params: ({page}) => ({page}),
+    props: ({data}) => data,
+  });
+  
+}) satisfies GetStaticPaths;
+
+const {page} = Astro.props;
+
+// Function to extract Pokemon ID from URL
+function getPokemonId(url: string): number {
+  const urlParts = url.split('/');
+  // Get the ID from the second-to-last position in URL (last is empty string)
+  return parseInt(urlParts[urlParts.length - 2]);
+}
+
+
+---
+
+<Layout title={title}>
+	<h1>Pokémons List</h1>
+	<hr class="my-4" />
+	<section aria-label="Listado de Pokémons" class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4">
+		{page.data.map((pokemon: {name: string, url: string} ) => (
+      <PokemonCard
+        id={getPokemonId(pokemon.url)}
+        name={pokemon.name}
+        isBig={false}
+      />
+    ))}
+
+  </section>
+
+    <section>
+      <div class="flex justify-center items-center px-10 mt-10 gap-4">
+        <a class:list={[
+          "btn",
+          {disabled: !page.url.prev},
+        ]} href={page.url.prev} class="btn text-blue-800 font-bold text-2xl">Anterior</a>
+
+        <span class="font-semibold">{page.currentPage}</span>
+
+        <a class:list={[
+          "btn",
+          {disabled: !page.url.next},
+        ]} href={page.url.next} class="btn text-blue-800 font-bold text-2xl">Siguiente</a>
+      </div>
+    </section>
+</Layout>
+
+<style>
+  .btn {
+   @apply hover:underline; 
+      
+  }
+
+  .disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+</style>
